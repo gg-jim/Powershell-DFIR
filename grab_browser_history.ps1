@@ -1,4 +1,4 @@
-$UserName = "wootf"
+$UserName = "bob.smith"
 $output_path = "C:\Users\$UserName\"
 $hostname = HOSTNAME.EXE
 $destination_file = "${hostname}_${UserName}_history_files.zip"
