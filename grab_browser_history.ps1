@@ -24,44 +24,54 @@ else {
 }
 
 <# Finding FireFox History Path #>
-try { 
-    $Path = "C:\Users\$UserName\AppData\Roaming\Mozilla\Firefox\Profiles\" 
-    $Profiles = Get-ChildItem -Path "$Path\*.default-release*\" -ErrorAction SilentlyContinue 
-    ForEach ($item in $Profiles) { 
-        $firefox_path = "$item\places.sqlite"
+
+if (-not (Test-Path -Path $output_path)) {
+
+    try { 
+        $Path = "C:\Users\$UserName\AppData\Roaming\Mozilla\Firefox\Profiles\" 
+        $Profiles = Get-ChildItem -Path "$Path\*.default-release*\" -ErrorAction SilentlyContinue 
+        ForEach ($item in $Profiles) { 
+            $firefox_path = "$item\places.sqlite"
+        }
     }
-}
-catch { Write-Output "[!] Could not find FireFox History for username: $UserName" }
-if (Test-Path -Path $firefox_path) { 
-    Write-Output "Found FireFox History for username at path: $firefox_path"
-} 
+    catch {
+        $Path = "C:\Users\$UserName\AppData\Roaming\Mozilla\Firefox\Profiles\" 
+        $Profiles = Get-ChildItem -Path "$Path\*.default-esr*\" -ErrorAction SilentlyContinue 
+        ForEach ($item in $Profiles) { 
+            $firefox_path = "$item\places.sqlite"
+        }
+    }
 
-<# Making copies of files #>
+    if (Test-Path -Path $firefox_path) { 
+        Write-Output "Found FireFox History for username at path: $firefox_path"
+    } 
 
-Write-Output "Copying Files..."
+    <# Making copies of files #>
 
-if (-not (Test-Path -Path $output_path)) { 
-    New-Item -Type Directory "$output_path" | Out-Null 
-} 
+    Write-Output "Copying Files..."
 
-New-Item -Type Directory "$output_path\history_files\" | Out-Null
-Copy-Item $chrome_path -Destination "$output_path\history_files\chrome_history" -ErrorAction SilentlyContinue
-Copy-Item $edge_path -Destination "$output_path\history_files\edge_history" -ErrorAction SilentlyContinue
-Copy-Item $firefox_path -Destination "$output_path\history_files\firefox_history.sqlite" -ErrorAction SilentlyContinue
+    if (-not (Test-Path -Path $output_path)) { 
+        New-Item -Type Directory "$output_path" | Out-Null 
+    } 
 
-<# Zipping Files #>
+    New-Item -Type Directory "$output_path\history_files\" | Out-Null
+    Copy-Item $chrome_path -Destination "$output_path\history_files\chrome_history" -ErrorAction SilentlyContinue
+    Copy-Item $edge_path -Destination "$output_path\history_files\edge_history" -ErrorAction SilentlyContinue
+    Copy-Item $firefox_path -Destination "$output_path\history_files\firefox_history.sqlite" -ErrorAction SilentlyContinue
 
-Write-Output "Zipping files..."
+    <# Zipping Files #>
 
-Compress-Archive -Path "$output_path\history_files\*" -DestinationPath $output_path\$destination_file
+    Write-Output "Zipping files..."
 
-if (Test-Path -Path "$output_path\$destination_file") { 
-    Write-Output "Zip successfully written at: $output_path\$destination_file"
-} 
-else {
-    Write-Output "Issue writing Zip at: $output_path\$destination_file"
-}
+    Compress-Archive -Path "$output_path\history_files\*" -DestinationPath $output_path\$destination_file
 
-<# Clean up #>
+    if (Test-Path -Path "$output_path\$destination_file") { 
+        Write-Output "Zip successfully written at: $output_path\$destination_file"
+    } 
+    else {
+        Write-Output "Issue writing Zip at: $output_path\$destination_file"
+    }
 
-Remove-Item "$output_path\history_files\" -Recurse -ErrorAction SilentlyContinue
+    <# Clean up #>
+
+    Remove-Item "$output_path\history_files\" -Recurse -ErrorAction SilentlyContinue
