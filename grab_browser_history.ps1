@@ -1,5 +1,5 @@
 $UserName = "wootf"
-$output_path = "C:\Users\$UserName\" <# Make sure this is a path you have permissions to!#>
+$output_path = "C:\Users\$UserName\"
 $hostname = HOSTNAME.EXE
 $destination_file = "${hostname}_${UserName}_history_files.zip"
 
@@ -39,6 +39,10 @@ if (Test-Path -Path $firefox_path) {
 <# Making copies of files #>
 
 Write-Output "Copying Files..."
+
+if (-not (Test-Path -Path $output_path)) { 
+    New-Item -Type Directory "$output_path" | Out-Null 
+} 
 
 New-Item -Type Directory "$output_path\history_files\" | Out-Null
 Copy-Item $chrome_path -Destination "$output_path\history_files\chrome_history" -ErrorAction SilentlyContinue
