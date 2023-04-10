@@ -62,4 +62,6 @@ else {
     Write-Output "Issue writing Zip at: $output_path\$destination_file"
 }
 
-Remove-Item "$output_path\history_files\" -Recurse
+<# Clean up #>
+
+Remove-Item "$output_path\history_files\" -Recurse -ErrorAction SilentlyContinue
