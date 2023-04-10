@@ -39,9 +39,9 @@ if (Test-Path -Path $firefox_path) {
 echo "Copying Files..."
 
 New-Item -Type Directory "$output_path\history_files\" | Out-Null
-Copy-Item $chrome_path -Destination "$output_path\history_files\chrome_history"
-Copy-Item $edge_path -Destination "$output_path\history_files\edge_history"
-Copy-Item $firefox_path -Destination "$output_path\history_files\firefox_history.sqlite"
+Copy-Item $chrome_path -Destination "$output_path\history_files\chrome_history" -ErrorAction SilentlyContinue
+Copy-Item $edge_path -Destination "$output_path\history_files\edge_history" -ErrorAction SilentlyContinue
+Copy-Item $firefox_path -Destination "$output_path\history_files\firefox_history.sqlite" -ErrorAction SilentlyContinue
 
 <# Zipping Files #>
 
